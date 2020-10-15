@@ -5,7 +5,7 @@ GO_FILES=$(find . -regex ".*\.go")
 
 lint:
 	go vet .
-	test $(goimports -l . | wc -l) -eq 0
+	test $(shell goimports -l . | wc -l) -eq 0
 
 build: dist/glmr
 
