@@ -9,18 +9,17 @@ stages:
   - test
   - release
 
-#vet:
-#  stage: vet
-#  before_script:
-#    - go install golang.org/x/tools/cmd/goimports
-#  script:
-#    - go vet .
-#    - test $(goimports -l . | wc -l) -eq 0
+vet:
+  stage: vet
+  before_script:
+    - go install golang.org/x/tools/cmd/goimports
+  script:
+    - make lint
 
 build:
   stage: build
   script:
-    - go build ./... -o glmr
+    - make build
   artifacts:
     paths:
       - glmr
