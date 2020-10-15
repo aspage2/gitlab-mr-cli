@@ -9,6 +9,9 @@ lint:
 
 build: dist/glmr
 
+test:
+	go test -vv .
+
 dist:
 	mkdir dist
 

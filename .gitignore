@@ -1,4 +1,5 @@
 .glmr.yaml
+dist/
 glmr.tar.gz
 glmr
 .token

@@ -1,7 +1,6 @@
-default:
-  image: golang:1.15-buster
-  before_script:
-    - go get -d -v ./...
+image: golang:1.15-buster
+before_script:
+  - go get -d -v ./...
 
 stages:
   - vet
@@ -11,10 +10,14 @@ stages:
 
 vet:
   stage: vet
-  before_script:
-    - go install golang.org/x/tools/cmd/goimports
   script:
+    - go install golang.org/x/tools/cmd/goimports
     - make lint
+
+test:
+  stage: test
+  script:
+    - go test -vv ./...
 
 build:
   stage: build
@@ -22,4 +25,17 @@ build:
     - make build
   artifacts:
     paths:
-      - dist/glmr
+      - $CI_PROJECT_DIR/dist/*
+
+release:
+  stage: release
+  image: python:3
+  only:
+    - tags
+  script:
+    - pip install gitlab-release
+    - gitlab-release $CI_PROJECT_DIR/dist/*
+  artifacts:
+    paths:
+      - $CI_PROJECT_DIR/dist/*
+

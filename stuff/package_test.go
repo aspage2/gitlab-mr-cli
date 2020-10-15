@@ -3,9 +3,9 @@ package stuff
 import (
 	"testing"
 
-	"github.com/magiconair/properties/assert"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestMyThing(t *testing.T) {
-	assert.Equal(t, 5, MyThing(2, 3))
+	assert.Equal(t, int32(5), MyThing(2, 3))
 }
