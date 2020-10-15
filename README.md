@@ -13,3 +13,5 @@ This will create a file called `.glmr.json`
  * `--title` -  the title of your MR. Defaults to the current commit message
  * `--source` - the source branch. Defaults to the current active branch
  * `--target` - the target branch. Defaults to the default branch of the project (usually master)
+
+o
