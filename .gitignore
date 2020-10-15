@@ -1,6 +1,7 @@
 .glmr.yaml
 glmr.tar.gz
 glmr
+.token
 
 # Binaries for programs and plugins
 *.exe
