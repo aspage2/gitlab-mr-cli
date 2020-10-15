@@ -1,11 +1,14 @@
 
-.PHONY: lint build test
+.PHONY: lint build test fmt
 
 GO_FILES=$(find . -regex ".*\.go")
 
 lint:
-	go vet .
+	go vet ./...
 	test $(shell goimports -l . | wc -l) -eq 0
+
+fmt:
+	goimports -w .
 
 build: dist/glmr
 
