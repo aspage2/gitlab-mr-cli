@@ -1,4 +1,3 @@
-
 default:
   image: golang:1.15-buster
   before_script:
@@ -12,6 +11,8 @@ stages:
 
 vet:
   stage: vet
+  before_script:
+    - go install golang.org/x/tools/cmd/goimports
   script:
     - go vet .
     - test $(goimports -l . | wc -l) -eq 0
