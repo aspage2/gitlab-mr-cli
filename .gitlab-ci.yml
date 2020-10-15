@@ -21,15 +21,6 @@ build:
   stage: build
   script:
     - go build ./...
-
-release:
-  stage: release
-  rules:
-    - if: $CI_COMMIT_TAG == ""
-      when: never
-    - when: on_success
-  script:
-    - tar czvf glmr.tar.gz glmr
   artifacts:
     paths:
-      - glmr.tar.gz
+      - glmr
