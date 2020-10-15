@@ -17,7 +17,7 @@ vet:
 test:
   stage: test
   script:
-    - go test -vv ./...
+    - go test -v ./...
 
 build:
   stage: build
