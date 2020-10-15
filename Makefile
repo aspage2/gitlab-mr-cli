@@ -9,7 +9,10 @@ lint:
 
 build: dist/glmr
 
-dist/glmr: $(GO_FILES)
+dist:
+	mkdir dist
+
+dist/glmr: $(GO_FILES) dist
 	go build -o dist ./...
 
 
