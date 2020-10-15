@@ -1,0 +1,34 @@
+
+default:
+  image: golang:1.15-buster
+  before_script:
+    - go get -d -v ./...
+
+stages:
+  - vet
+  - build
+  - test
+  - release
+
+vet:
+  stage: vet
+  script:
+    - go vet .
+    - test $(goimports -l . | wc -l) -eq 0
+
+build:
+  stage: build
+  script:
+    - go build ./...
+
+release:
+  stage: release
+  rules:
+    - if: $CI_COMMIT_TAG == ""
+      when: never
+    - when: on_success
+  script:
+    - tar czvf glmr.tar.gz glmr
+  artifacts:
+    paths:
+      - glmr.tar.gz
