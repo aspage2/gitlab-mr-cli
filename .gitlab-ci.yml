@@ -1,6 +1,4 @@
 image: golang:1.15-buster
-before_script:
-  - go get -d -v ./...
 
 stages:
   - vet
@@ -17,11 +15,13 @@ vet:
 test:
   stage: test
   script:
+    - go get -d -v ./...
     - go test -v ./...
 
 build:
   stage: build
   script:
+    - go get -d -v ./...
     - make build
   artifacts:
     paths:
