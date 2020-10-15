@@ -13,7 +13,7 @@ fmt:
 build: dist/glmr
 
 test:
-	go test -vv .
+	go test -v ./...
 
 dist:
 	mkdir dist
