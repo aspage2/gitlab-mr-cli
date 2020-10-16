@@ -10,7 +10,8 @@ vet:
   stage: vet
   script:
     - go install golang.org/x/tools/cmd/goimports
-    - make lint
+    - go vet ./...
+    - test $(goimports -l . | wc -l) -eq 0
 
 test:
   stage: test
