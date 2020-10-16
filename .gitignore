@@ -1,7 +1,8 @@
 .glmr.yaml
 dist/
 glmr.tar.gz
-./glmr
+glmr
+!cmd/glmr
 .token
 
 # Binaries for programs and plugins

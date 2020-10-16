@@ -20,7 +20,7 @@ test:
 build:
   stage: build
   script:
-    - make build
+    - go build -o $CI_PROJECT_DIR ./...
   artifacts:
     paths:
       - $CI_PROJECT_DIR/glmr
