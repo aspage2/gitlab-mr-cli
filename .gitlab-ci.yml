@@ -15,17 +15,15 @@ vet:
 test:
   stage: test
   script:
-    - go get -d -v ./...
     - go test -v ./...
 
 build:
   stage: build
   script:
-    - go get -d -v ./...
     - make build
   artifacts:
     paths:
-      - $CI_PROJECT_DIR/dist/*
+      - $CI_PROJECT_DIR/glmr
 
 release:
   stage: release
@@ -34,8 +32,8 @@ release:
     - tags
   script:
     - pip install gitlab-release
-    - gitlab-release $CI_PROJECT_DIR/dist/*
+    - gitlab-release $CI_PROJECT_DIR/glmr
   artifacts:
     paths:
-      - $CI_PROJECT_DIR/dist/*
+      - $CI_PROJECT_DIR/glmr
 
