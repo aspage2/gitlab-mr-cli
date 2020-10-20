@@ -1,9 +1,11 @@
 .glmr.yaml
 dist/
 glmr.tar.gz
-glmr
+glmr_*
 !cmd/glmr
 .token
+release/*
+*build-harness*
 
 # Binaries for programs and plugins
 *.exe
