@@ -31,7 +31,7 @@ var cfgFile string
 var rootCmd = &cobra.Command{
 	Use:   "glmr",
 	Short: "CLI for creating Gitlab MRs.",
-	Long:  `GLMR is a cli tool for creating merge requests from `,
+	Long:  `GLMR is a cli tool for creating merge requests from the CLI.`,
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
