@@ -6,10 +6,6 @@ stages:
   - test
   - release
 
-before_script:
-  - apt update
-  - apt install -y libgit2-dev
-
 vet:
   stage: vet
   script:

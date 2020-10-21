@@ -22,7 +22,7 @@ import (
 	"log"
 	"strings"
 
-	git "github.com/libgit2/git2go/v27"
+	"github.com/go-git/go-git/v5"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -81,7 +81,7 @@ func actualCreateCommand() {
 
 	var opt gitlab.CreateMergeRequestOptions
 
-	repo, err := git.OpenRepository(".")
+	repo, err := git.PlainOpen(".")
 	chk(err)
 
 	slug := getRepoSlug(repo)
@@ -92,6 +92,10 @@ func actualCreateCommand() {
 
 	opt.TargetBranch = gitlab.String(getTargetBranch())
 	fmt.Printf("Using \u001b[32;1m%s\u001b[0m as target branch\n", *opt.TargetBranch)
+
+	if *opt.SourceBranch == *opt.TargetBranch {
+		chk(errors.New("cannot merge a branch into itself: " + *opt.SourceBranch))
+	}
 
 	opt.Title = gitlab.String(getMRTitle(inputMethod))
 
@@ -110,9 +114,9 @@ func actualCreateCommand() {
 }
 
 func getRepoSlug(repo *git.Repository) string {
-	remote, err := repo.Remotes.Lookup("origin")
+	remote, err := repo.Remote("origin")
 	chk(err)
-	slug, err := repository.GetRepoSlug(remote.Url())
+	slug, err := repository.GetRepoSlug(remote.Config().URLs[0])
 	chk(err)
 	return slug
 }
@@ -121,10 +125,10 @@ func getSourceBranch(repo *git.Repository) string {
 	if MergeSource == "" {
 		head, err := repo.Head()
 		chk(err)
-		if !head.IsBranch() {
+		if !head.Name().IsBranch() {
 			chk(errors.New("can't determine merge source: HEAD is not a branch"))
 		}
-		items := strings.Split(head.Name(), "/")
+		items := strings.Split(head.Name().String(), "/")
 		return items[len(items)-1]
 	}
 	return MergeSource
