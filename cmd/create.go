@@ -61,7 +61,7 @@ func init() {
 
 func chk(err error) {
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("\u001b[1;31mFATAL\u001b[0m: %s", err.Error())
 	}
 }
 
@@ -97,7 +97,10 @@ func actualCreateCommand() {
 		chk(errors.New("cannot merge a branch into itself: " + *opt.SourceBranch))
 	}
 
-	opt.Title = gitlab.String(getMRTitle(inputMethod))
+	opt.Title = gitlab.String(getMRTitle())
+	if *opt.Title == "" {
+		chk(errors.New("title cannot be empty"))
+	}
 
 	opt.Description = gitlab.String(getMRDescription(inputMethod))
 
@@ -142,11 +145,9 @@ func getTargetBranch() string {
 	}
 }
 
-func getMRTitle(inputMethod userinput.LargeInputStrategy) string {
+func getMRTitle() string {
 	if Title == "" {
-		title, err := userinput.LargeInput("Please provide an MR title", inputMethod)
-		chk(err)
-		return strings.TrimSpace(title)
+		return userinput.StdinPrompt("Please provide an MR title")
 	} else {
 		return Title
 	}

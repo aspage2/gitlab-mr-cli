@@ -106,12 +106,8 @@ func YesOrNo(prompt string, yesIsDefault bool) (bool, error) {
 	} else {
 		optionStr = "[y/N]"
 	}
-	var choice string
 	for {
-		fmt.Printf("%s %s ", prompt, optionStr)
-		scan := bufio.NewScanner(os.Stdin)
-		scan.Scan()
-		choice = strings.Trim(scan.Text(), "\n")
+		choice := StdinPrompt(prompt + " " + optionStr)
 		switch strings.ToLower(choice) {
 		case "y", "yes":
 			return true, nil
@@ -121,4 +117,12 @@ func YesOrNo(prompt string, yesIsDefault bool) (bool, error) {
 			return yesIsDefault, nil
 		}
 	}
+}
+
+// StdinPrompt receives a one-line response from the user via stdin.
+func StdinPrompt(prompt string) string {
+	scanner := bufio.NewScanner(os.Stdin)
+	fmt.Print(prompt + " ")
+	scanner.Scan()
+	return strings.TrimRight(scanner.Text(), "\n")
 }
