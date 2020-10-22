@@ -1,13 +1,32 @@
--include $(shell [ -e .build-harness ] || curl -sSL -o .build-harness "https://git.io/mintel-build-harness"; echo .build-harness)
+TARGET_OS = linux windows darwin
+TARGET_ARCH = amd64
 
-.PHONY: init lint clean build test
+.PHONY: init lint fmt clean build test
+
 init: bh/init
 
-build: go/build
+build: vgo/gox
+	@mkdir -p build/
+	./vgo/gox -os='$(TARGET_OS)' -arch='$(TARGET_ARCH)' -output='build/glmr_{{.OS}}_{{.Arch}}' ./...
 
-lint: go/lint go/vet
+lint: vgo/goimports
+	go vet ./...
+	test $(shell ./vgo/goimports -l . | wc -l) -eq 0
 
-test: go/test
+fmt: vgo/goimports
+	goimports -w .
 
-clean: go/clean
-	rm -f glmr
+test:
+	go test -v ./...
+
+clean:
+	rm -rf build/
+	rm -rf vgo/
+
+vgo/goimports: 	
+	@mkdir -p vgo
+	./scripts/vgoget.sh golang.org/x/tools/cmd/goimports vgo
+
+vgo/gox:
+	@mkdir -p vgo
+	./scripts/vgoget.sh github.com/mitchellh/gox vgo

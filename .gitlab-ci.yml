@@ -1,30 +1,28 @@
-image: golang:1.15-buster
+image: golang:1.15
 
 stages:
   - vet
-  - build
   - test
+  - build
   - release
 
 vet:
   stage: vet
   script:
-    - go install golang.org/x/tools/cmd/goimports
-    - go vet ./...
-    - test $(goimports -l . | wc -l) -eq 0
+    - make lint
 
 test:
   stage: test
   script:
-    - go test -v ./...
+    - make test
 
 build:
   stage: build
   script:
-    - go build -o $CI_PROJECT_DIR ./...
+    - make build
   artifacts:
     paths:
-      - $CI_PROJECT_DIR/glmr
+      - $CI_PROJECT_DIR/build/*
 
 release:
   stage: release
@@ -32,9 +30,9 @@ release:
   only:
     - tags
   script:
-    - pip install gitlab-release
-    - gitlab-release $CI_PROJECT_DIR/glmr
+    - pip install requests click
+    - python scripts/release.py $CI_PROJECT_DIR/build/*
   artifacts:
     paths:
-      - $CI_PROJECT_DIR/glmr
+      - $CI_PROJECT_DIR/build/*
 

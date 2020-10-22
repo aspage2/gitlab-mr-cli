@@ -3,8 +3,29 @@
 
 Cli tool for creating merge requests for gitlab.
 
-## Installation
-Clone this repository and `make build`. Copy the executable `release/glmr` to your PATH.
+## Installation & Setup
+
+Download the [latest release](https://gitlab.com/mintel/personal-dev/apage/gitlab-mr-cli/-/releases)
+for your operating system. `chmod +x` and copy the executable to somewhere on your PATH
+as a file called `glmr`. You can now invoke it from your shell:
+
+```
+~/everest $ glmr
+GLMR is a cli tool for creating merge requests from the CLI.
+
+Usage:
+  glmr [command]
+
+Available Commands:
+  create      Create a new MR in this repository.
+  help        Help about any command
+
+Flags:
+      --config string   config file (default is $HOME/.glmr.yaml)
+  -h, --help            help for glmr
+
+Use "glmr [command] --help" for more information about a command.
+```
 
 Generate an API key for your gitlab user, give it the `api` scope: [gitlab token settings](https://gitlab.com/profile/personal_access_tokens)
 

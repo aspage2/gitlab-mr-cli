@@ -1,6 +1,7 @@
 .glmr.yaml
 dist/
 glmr.tar.gz
+vgo/
 glmr_*
 !cmd/glmr
 .token
