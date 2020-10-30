@@ -3,11 +3,16 @@ TARGET_ARCH = amd64
 
 .PHONY: init lint fmt clean build test
 
-init: bh/init
+install:
+	go install ./...
 
 build: vgo/gox
 	@mkdir -p build/
 	./vgo/gox -os='$(TARGET_OS)' -arch='$(TARGET_ARCH)' -output='build/glmr_{{.OS}}_{{.Arch}}' ./...
+
+build-local:
+	@mkdir -p build
+	go build -o build ./...
 
 lint: vgo/goimports
 	go vet ./...

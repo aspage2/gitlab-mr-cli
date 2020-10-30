@@ -7,6 +7,7 @@ glmr_*
 .token
 release/*
 *build-harness*
+build/
 
 # Binaries for programs and plugins
 *.exe

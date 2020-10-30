@@ -5,12 +5,27 @@ Cli tool for creating merge requests for gitlab.
 
 ## Installation & Setup
 
+### Step 1: Install
+#### Method 1: Download pre-built binary
 Download the [latest release](https://gitlab.com/mintel/personal-dev/apage/gitlab-mr-cli/-/releases)
-for your operating system. `chmod +x` and copy the executable to somewhere on your PATH
-as a file called `glmr`. You can now invoke it from your shell:
-
+for your operating system.
+```sh
+cd ~/Downloads
+chmod +x glmr_X_Y
+sudo mv glmr_X_Y /usr/local/bin/glmr
 ```
-~/everest $ glmr
+
+#### Method 2: Build from source
+Clone this repo to your machine and build locally with make:
+```sh
+git clone --depth=1 git@gitlab.com:mintel/personal-dev/apage/gitlab-mr-cli.git
+cd gitlab-mr-cli
+make install
+```
+---
+Once installed, you can now invoke it with `glmr`:
+```
+~ $ glmr
 GLMR is a cli tool for creating merge requests from the CLI.
 
 Usage:
@@ -27,9 +42,9 @@ Flags:
 Use "glmr [command] --help" for more information about a command.
 ```
 
-Generate an API key for your gitlab user, give it the `api` scope: [gitlab token settings](https://gitlab.com/profile/personal_access_tokens)
+### Step 2: Setup
 
-Save that token along with other user settings in `$HOME/.glmr.yaml`:
+Generate an API key for your gitlab user, give it the `api` scope: [gitlab token settings](https://gitlab.com/profile/personal_access_tokens) Save that token along with other user settings in `$HOME/.glmr.yaml`:
 ```yaml
 APIToken: your-api-token-here
 Editor: vim
@@ -38,65 +53,27 @@ DescriptionTemplate: |
   What do you want the reviewers to review?
 ```
 
-## Configuration
-GLMR looks for `.glmr.yaml` in either `$HOME` or your current directory.
-
-| Name              | Descirption                                            | Notes                                                        |
-| ----------------- | ------------------------------------------------------ | ------------------------------------------------------------ |
-| `APIToken`        | Gitlab API token.                                      | Should have `api` scope to be able to write to the gitlab API. |
-| `Editor`      | Editor to use for large user inputs                  | Supported editors: `vim`, `nano`, `vscode`, `typora`         |
-| `DescriptionTemplate` | Template to show when prompting for the MR description |                                                              |
+An example configuration exists in `examples/example.glmr.yaml`. 
 
 ## Usage
 
-Glmr creates merge requests via the Gitlab API. It supports the following MR options:
+GLMR creates merge requests via the Gitlab API. It supports the following MR options:
 
 * `--title` - MR title
 * `--description` - MR description
 * `--source` - Branch name of merge source
 * `--target` - Branch name of merge target
 
+When those flags aren't provided, GLMR sources their values in the following ways:
 
-### Default Behaviors
-When not provided, Glmr has default methods for sourcing each field:
-
-**Title** - Prompts the user
-
-**Description** - Prompts the user. Uses .glmr.yaml.DescriptionTemplate as a template.
-
-**Source** - scrapes `.git/` for the current active branch
-
-**Target** - always defaults to "master"
-
-**Assignee** - Prompts the user whether or not the API token holder should be assigned.
-
-**Project Slug** - Scrapes `.git/config` for the remote URL, and uses the path as the slug (ex. `https://gitlab.com/mintel/everest/mdl-planner.git > mintel/everest/mdl-planner`)
-
-```
- ~/everest/ops/glmr (lotta-stuff) $ glmr create --dry-run
-Using config file: /home/apage/.glmr.yaml
-Using mintel/personal-dev/apage/gitlab-mr-cli as project ID
-Using lotta-stuff as source branch
-Using master as target branch
-
-# prompt user for title....
-
-# prompt user for description...
-
-Assign to user apage1 (token holder)? [Y/n] y
-
- -- DRY RUN -- 
-POST https://gitlab.com/api/v4/projects/mintel%2Fpersonal-dev%2Fapage%2Fgitlab-mr-cli/merge_requests
-Content-Type: [application/json]
-Authorization: [Bearer (----)]
-{
-  "assignee_id": 00000000,
-  "description": "## Goal\nWhat is the goal of the MR?\n\n## Changes\nExplain the diff as a list of high-level changes\n\n## Notes\nAdditional notes \u0026 concerns for the reviewer\n",
-  "source_branch": "lotta-stuff",
-  "target_branch": "master",
-  "title": "Please provide an MR title"
-}
-```
+| Option             | Source                                                       |
+| ------------------ | ------------------------------------------------------------ |
+| **MR Title**       | Prompts the user                                             |
+| **MR Description** | Prompts the user. Uses .glmr.yaml.DescriptionTemplate as a template. |
+| **Source Branch**  | Uses the currently checked-out branch                        |
+| **Target Branch**  | Defaults to "master"                                         |
+| **Assignee**       | Prompts for whether or not to assign the token holder to the MR |
+| **Project Slug**   | Parses the project's remote and extracts the Gitlab project-slug from the remote URL. ex. `https://gitlab.com/mintel/everest/mdl-planner.git -> mintel/everest/mdl-planner` |
 
 ### Dry Runs
 
