@@ -49,6 +49,14 @@ All fields may be overridden by the relevant CLI flag (see below).
 	},
 }
 
+var (
+	DryRun      bool
+	Title       string
+	Description string
+	MergeSource string
+	MergeTarget string
+)
+
 func init() {
 	rootCmd.AddCommand(createCmd)
 
@@ -59,20 +67,39 @@ func init() {
 	createCmd.Flags().StringVar(&Description, "description", "", "Description for the MR. Prompts with a template if not provided.")
 }
 
+// Panic on error, noop otherwise
 func chk(err error) {
 	if err != nil {
-		log.Fatalf("\u001b[1;31mFATAL\u001b[0m: %s", err.Error())
+		log.Fatalf("%s: %s", red("FATAL"), err.Error())
 	}
 }
 
-var (
-	DryRun      bool
-	Title       string
-	Description string
-	MergeSource string
-	MergeTarget string
-)
+// ANSI-bold-green string
+func green(s string) string {
+	return fmt.Sprintf("\u001b[32;1m%s\u001b[0m", s)
+}
 
+// ANSI-bold-red string
+func red(s string) string {
+	return fmt.Sprintf("\u001b[31;1m%s\u001b[0m", s)
+}
+
+// Pretty-prints the json payload for a Create MR call
+func printRequest(opt *gitlab.CreateMergeRequestOptions) {
+	data, err := json.MarshalIndent(opt, "", "  ")
+	chk(err)
+	fmt.Println(string(data))
+}
+
+// Submit the Create MR request; display the MR url on success
+func submitAndReport(client *gitlab.Client, opt *gitlab.CreateMergeRequestOptions, slug string) {
+	// Submit the request
+	mr, _, err := client.MergeRequests.CreateMergeRequest(slug, opt)
+	chk(err)
+	fmt.Printf("View online at %s\n", mr.WebURL)
+}
+
+// Entrypoint for `glmr create`
 func actualCreateCommand() {
 	client, err := gitlab.NewClient(viper.GetString("APIToken"))
 	chk(err)
@@ -85,13 +112,13 @@ func actualCreateCommand() {
 	chk(err)
 
 	slug := getRepoSlug(repo)
-	fmt.Printf("Using \u001b[32;1m%s\u001b[0m as project slug\n", slug)
+	fmt.Printf("Using %s as project slug\n", green(slug))
 
 	opt.SourceBranch = gitlab.String(getSourceBranch(repo))
-	fmt.Printf("Using \u001b[32;1m%s\u001b[0m as source branch\n", *opt.SourceBranch)
+	fmt.Printf("Using %s as source branch\n", green(*opt.SourceBranch))
 
 	opt.TargetBranch = gitlab.String(getTargetBranch())
-	fmt.Printf("Using \u001b[32;1m%s\u001b[0m as target branch\n", *opt.TargetBranch)
+	fmt.Printf("Using %s as target branch\n\n", green(*opt.TargetBranch))
 
 	if *opt.SourceBranch == *opt.TargetBranch {
 		chk(errors.New("cannot merge a branch into itself: " + *opt.SourceBranch))
@@ -108,13 +135,15 @@ func actualCreateCommand() {
 
 	// If DryRun, Log the request & quit
 	if DryRun {
-		fmt.Println("\n\u001b[31;1m -- DRY RUN -- \u001b[0m")
+		fmt.Println(red("-- DRY RUN --"))
 		printRequest(&opt)
 	} else {
 		submitAndReport(client, &opt, slug)
 	}
 
 }
+
+// --- getX routines for sourcing MR options ---
 
 func getRepoSlug(repo *git.Repository) string {
 	remote, err := repo.Remote("origin")
@@ -167,23 +196,10 @@ func getMRDescription(inputMethod userinput.LargeInputStrategy) string {
 func getAssignee(client *gitlab.Client) int {
 	user, _, err := client.Users.CurrentUser()
 	chk(err)
-	assignSelf, err := userinput.YesOrNo(fmt.Sprintf("Assign %s (token holder)?", user.Username), true)
+	assignSelf, err := userinput.YesOrNo(fmt.Sprintf("Assign MR to %s (token holder)?", green(user.Username)), true)
 	chk(err)
 	if assignSelf {
 		return user.ID
 	}
 	return 0
-}
-
-func printRequest(opt *gitlab.CreateMergeRequestOptions) {
-	data, err := json.MarshalIndent(opt, "", "  ")
-	chk(err)
-	fmt.Println(string(data))
-}
-
-func submitAndReport(client *gitlab.Client, opt *gitlab.CreateMergeRequestOptions, slug string) {
-	// Submit the request
-	mr, _, err := client.MergeRequests.CreateMergeRequest(slug, opt)
-	chk(err)
-	fmt.Printf("View online at %s\n", mr.WebURL)
 }

@@ -122,7 +122,7 @@ func YesOrNo(prompt string, yesIsDefault bool) (bool, error) {
 // StdinPrompt receives a one-line response from the user via stdin.
 func StdinPrompt(prompt string) string {
 	scanner := bufio.NewScanner(os.Stdin)
-	fmt.Print(prompt + " ")
+	fmt.Print(prompt + " > ")
 	scanner.Scan()
 	return strings.TrimRight(scanner.Text(), "\n")
 }

@@ -1,0 +1,24 @@
+
+## Example .glmr.yaml
+## To use this file, copy it to your home directory as `~/.glmr.yaml`.
+## All comments which start with "##" are actual comments;
+## The ones with single "#"s are commented-out configurations
+
+## #### REQUIRED KEY ####
+## Create a gitlab token with `api` scope in your user settings.
+APIToken: xxxx
+
+## Set to one of nano, vim, vscode, typora; default is nano
+# Editor: nano
+
+## The template to use for MR descriptions.
+DescriptionTemplate: |
+  ## Context
+  (What the overall goal of this MR is)
+
+  ## Changes
+   * (High-level changelist to help clarify the diff)
+
+  ## Concerns
+   * (Additional notes to the reviewer)
+
