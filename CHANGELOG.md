@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
    - Example configuration file
    - `install` and `build-local` make targets for easy installation
  * `version` subcommand
+ * `create` subcommand flags for squashing commits & deleing source branch on merge
 
 ## [0.1.0] - 2020-10-22
 First real release
