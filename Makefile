@@ -1,18 +1,21 @@
 TARGET_OS = linux windows darwin
 TARGET_ARCH = amd64
 
-.PHONY: init lint fmt clean build test
+VERSION_TAG ?= $(shell git describe HEAD)
+LDFLAGS = -X gitlab.com/mintel/personal-dev/apage/glmr/cmd.AppVersion=$(VERSION_TAG)
+
+.PHONY: init lint fmt clean build install build-local test
 
 install:
-	go install ./...
+	go install -ldflags="$(LDFLAGS)" ./...
 
 build: vgo/gox
 	@mkdir -p build/
-	./vgo/gox -os='$(TARGET_OS)' -arch='$(TARGET_ARCH)' -output='build/glmr_{{.OS}}_{{.Arch}}' ./...
+	./vgo/gox -os='$(TARGET_OS)' -arch='$(TARGET_ARCH)' -ldflags="$(LDFLAGS)" -output='build/glmr_{{.OS}}_{{.Arch}}' ./...
 
 build-local:
 	@mkdir -p build
-	go build -o build ./...
+	go build -ldflags="$(LDFLAGS)" -o build ./...
 
 lint: vgo/goimports
 	go vet ./...
