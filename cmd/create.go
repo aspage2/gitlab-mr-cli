@@ -60,11 +60,19 @@ var (
 func init() {
 	rootCmd.AddCommand(createCmd)
 
-	createCmd.Flags().BoolVar(&DryRun, "dry-run", false, "Log HTTP request without performing it.")
-	createCmd.Flags().StringVar(&Title, "title", "", "Title for the MR.")
-	createCmd.Flags().StringVar(&MergeSource, "source", "", "Branch to use as merge source. Defaults to current branch.")
-	createCmd.Flags().StringVar(&MergeTarget, "target", "master", "Branch to use as merge target.")
-	createCmd.Flags().StringVar(&Description, "description", "", "Description for the MR. Prompts with a template if not provided.")
+	flagSet := createCmd.Flags()
+
+	flagSet.BoolVar(&DryRun, "dry-run", false, "Log HTTP request without performing it.")
+	flagSet.StringVar(&Title, "title", "", "Title for the MR.")
+	flagSet.StringVar(&MergeSource, "source", "", "Branch to use as merge source. Defaults to current branch.")
+	flagSet.StringVar(&MergeTarget, "target", "master", "Branch to use as merge target.")
+	flagSet.StringVar(&Description, "description", "", "Description for the MR. Prompts with a template if not provided.")
+
+	flagSet.Bool("delete-source", false, "Delete source branch on merge. Overrides MROptions.DeleteSourceBranch")
+	flagSet.Bool("squash-commits", false, "Squash commits on merge. Overrides MROptions.SquashCommits")
+
+	viper.BindPFlag("MROptions.DeleteSourceBranch", flagSet.Lookup("delete-source"))
+	viper.BindPFlag("MROptions.SquashCommits", flagSet.Lookup("squash-commits"))
 }
 
 // Panic on error, noop otherwise
@@ -132,6 +140,9 @@ func actualCreateCommand() {
 	opt.Description = gitlab.String(getMRDescription(inputMethod))
 
 	opt.AssigneeID = gitlab.Int(getAssignee(client))
+
+	opt.RemoveSourceBranch = gitlab.Bool(viper.GetBool("MROptions.DeleteSourceBranch"))
+	opt.Squash = gitlab.Bool(viper.GetBool("MROptions.SquashCommits"))
 
 	// If DryRun, Log the request & quit
 	if DryRun {

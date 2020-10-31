@@ -22,3 +22,10 @@ DescriptionTemplate: |
   ## Concerns
    * (Additional notes to the reviewer)
 
+MROptions:
+
+## Delete the source branch on merge. Default false
+# DeleteSourceBranch: true
+
+## Squash the source branch into one commit on merge. Default false
+# SquashCommits: true

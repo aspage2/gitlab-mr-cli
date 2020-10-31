@@ -7,7 +7,8 @@ LDFLAGS = -X gitlab.com/mintel/personal-dev/apage/glmr/cmd.AppVersion=$(VERSION_
 .PHONY: init lint fmt clean build install build-local test
 
 install:
-	go install -ldflags="$(LDFLAGS)" ./...
+	@echo "Installing to your GOPATH..."
+	@go install -ldflags="$(LDFLAGS)" ./...
 
 build: vgo/gox
 	@mkdir -p build/
