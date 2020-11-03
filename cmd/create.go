@@ -19,6 +19,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"strings"
 
@@ -195,7 +196,22 @@ func getMRTitle() string {
 
 func getMRDescription(inputMethod userinput.LargeInputStrategy) string {
 	if Description == "" {
-		template := viper.GetString("DescriptionTemplate")
+		var template string
+		files, err := repository.GetRepoTemplates()
+		if err != nil || len(files) == 0 {
+			template = viper.GetString("DescriptionTemplate")
+		} else if len(files) == 1 {
+			fmt.Printf("\nFound MR template: %s\n", files[0])
+			data, err := ioutil.ReadFile(files[0])
+			chk(err)
+			template = string(data)
+		} else {
+			fmt.Println("\nFound multiple MR templates in .gitlab/merge_request_templates:")
+			choice := userinput.MultiChoicePrompt(files, "Choose an MR Template")
+			data, err := ioutil.ReadFile(choice)
+			chk(err)
+			template = string(data)
+		}
 		description, err := userinput.LargeInput(template, inputMethod)
 		chk(err)
 		return description

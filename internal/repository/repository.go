@@ -5,6 +5,8 @@ package repository
 import (
 	"errors"
 	"net/url"
+	"os"
+	"path/filepath"
 	"strings"
 )
 
@@ -36,4 +38,25 @@ func GetRepoSlug(u string) (string, error) {
 	} else {
 		return slug, nil
 	}
+}
+
+// GetRepoTemplates looks for `.md` files in the subdirectory
+// `.gitlab/merge_request_templates`, returning a slice of all filenames found.
+// Returns an error if either directory doesn't exist.
+func GetRepoTemplates() ([]string, error) {
+
+	var files []string
+	err := filepath.Walk(
+		".gitlab/merge_request_templates",
+		func(path string, info os.FileInfo, err error) error {
+			if err != nil {
+				return err
+			}
+			if !info.IsDir() && strings.HasSuffix(path, ".md") {
+				files = append(files, path)
+			}
+			return nil
+		},
+	)
+	return files, err
 }

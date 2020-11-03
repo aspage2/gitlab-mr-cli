@@ -126,3 +126,25 @@ func StdinPrompt(prompt string) string {
 	scanner.Scan()
 	return strings.TrimRight(scanner.Text(), "\n")
 }
+
+// MultiChoicePrompt prompts the user to choose one of the choices
+// provided by the arguments
+func MultiChoicePrompt(choices []string, prompt string) string {
+	promptHint := fmt.Sprintf("(1-%d)", len(choices))
+	for i, c := range choices {
+		fmt.Printf("%d.\t%s\n", i+1, c)
+	}
+	fmt.Println()
+	var choice int
+	for {
+		fmt.Printf("%s %s ", prompt, promptHint)
+		_, err := fmt.Scanf("%d\n", &choice)
+		if err == nil && choice >= 1 && choice <= len(choices) {
+			return choices[choice-1]
+		} else if err != nil {
+			fmt.Println(err)
+		} else {
+			fmt.Printf("Invalid choice: %d\n", choice)
+		}
+	}
+}
