@@ -117,7 +117,7 @@ func actualCreateCommand() {
 
 	var opt gitlab.CreateMergeRequestOptions
 
-	repo, err := git.PlainOpen(".")
+	repo, err := git.PlainOpenWithOptions(".", &git.PlainOpenOptions{DetectDotGit: true})
 	chk(err)
 
 	slug := getRepoSlug(repo)
