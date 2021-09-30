@@ -1,5 +1,11 @@
 image: golang:1.16
 
+workflow:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_COMMIT_TAG'
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+
 stages:
   - test
   - build
@@ -23,6 +29,7 @@ build:
   stage: build
   script:
     - make build
+    - find build/ -type f | xargs gzip
   artifacts:
     paths:
       - $CI_PROJECT_DIR/build/*
@@ -30,8 +37,8 @@ build:
 release:
   stage: release
   image: python:3
-  only:
-    - tags
+  rules:
+    - if: $CI_COMMIT_TAG
   script:
     - pip install requests click
     - python scripts/release.py $CI_PROJECT_DIR/build/*
