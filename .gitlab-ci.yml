@@ -1,13 +1,16 @@
-image: golang:1.15
+image: golang:1.16
 
 stages:
-  - vet
   - test
   - build
   - release
 
+default:
+  tags:
+    - mintel
+
 vet:
-  stage: vet
+  stage: test
   script:
     - make lint
 
