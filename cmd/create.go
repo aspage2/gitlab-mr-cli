@@ -1,5 +1,5 @@
 /*
-Copyright © 2020 NAME HERE <EMAIL ADDRESS>
+Copyright © 2020
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -13,6 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+
 package cmd
 
 import (
@@ -66,7 +67,7 @@ func init() {
 	flagSet.BoolVar(&DryRun, "dry-run", false, "Log HTTP request without performing it.")
 	flagSet.StringVar(&Title, "title", "", "Title for the MR.")
 	flagSet.StringVar(&MergeSource, "source", "", "Branch to use as merge source. Defaults to current branch.")
-	flagSet.StringVar(&MergeTarget, "target", "master", "Branch to use as merge target.")
+	flagSet.StringVar(&MergeTarget, "target", "", "Branch to use as merge target.")
 	flagSet.StringVar(&Description, "description", "", "Description for the MR. Prompts with a template if not provided.")
 
 	flagSet.Bool("delete-source", false, "Delete source branch on merge. Overrides MROptions.DeleteSourceBranch")
@@ -126,7 +127,7 @@ func actualCreateCommand() {
 	opt.SourceBranch = gitlab.String(getSourceBranch(repo))
 	fmt.Printf("Using %s as source branch\n", green(*opt.SourceBranch))
 
-	opt.TargetBranch = gitlab.String(getTargetBranch())
+	opt.TargetBranch = gitlab.String(getTargetBranch(client, slug))
 	fmt.Printf("Using %s as target branch\n\n", green(*opt.TargetBranch))
 
 	if *opt.SourceBranch == *opt.TargetBranch {
@@ -178,9 +179,11 @@ func getSourceBranch(repo *git.Repository) string {
 	return MergeSource
 }
 
-func getTargetBranch() string {
+func getTargetBranch(gitlab *gitlab.Client, slug string) string {
 	if MergeTarget == "" {
-		return "master"
+		proj, _, err := gitlab.Projects.GetProject(slug, nil)
+		chk(err)
+		return proj.DefaultBranch
 	} else {
 		return MergeTarget
 	}

@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Added
+ * **Default Branch Discovery** - if `--target` option isn't provided, glmr makes a
+   Gitlab API call to figure out the name of the project's default branch.
+
 ## [0.2.1] - 2020-11-11
 ### Fixed
  * `glmr create` searches ancestor directories for a git project root (#4)

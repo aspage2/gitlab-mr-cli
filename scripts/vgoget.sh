@@ -11,5 +11,4 @@ d="$(mktemp -d)"
 cd "$d" || exit
 name="$(basename "$1")"
 GOPATH="$d" go get "$1"
-GOPATH="$d" go install "$1"
 cp "$d/bin/$name" "$install_path"
